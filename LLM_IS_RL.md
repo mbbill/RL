@@ -15,9 +15,10 @@ This perspective offers several insights:
 ## 2. Background
 
 ### 2.1 Average Reward in Reinforcement Learning
-In reinforcement learning, an agent learns to make decisions by interacting with an environment. While many RL formulations focus on maximizing discounted future rewards, there's an alternative perspective: optimizing the average reward received over time. This approach is particularly relevant when we care about long-term sustainable performance rather than rewards accumulated from a specific starting point.
-To understand average reward, consider a simple example: imagine a robot learning to navigate a building. While discounted reward might encourage finding the quickest path to a specific goal, average reward optimization would focus on maintaining efficient movement patterns over extended periods. The robot would learn behaviors that work well consistently, much like how humans develop natural walking gaits.
-In language, this parallels how humans maintain coherent communication over time, rather than optimizing for individual sentences in isolation. This connection will be crucial for our analysis of language models.
+In reinforcement learning, an agent learns to make decisions by interacting with an environment. While many RL formulations focus on maximizing discounted future rewards, there's an alternative perspective: optimizing the average reward received over time.
+
+The key insight of average reward optimization is that it converts a long-term optimization problem into a short-term one. Rather than explicitly calculating future rewards, it shows that under a stationary distribution, optimizing immediate rewards naturally leads to optimal long-term behavior. This perspective is particularly powerful for analyzing language models. While LLMs appear to only optimize for immediate next-token prediction, they somehow achieve sophisticated long-term capabilities. As we will show, this apparent paradox can be resolved by viewing LLM training as average reward optimization, where the stationary distribution of human text allows local token optimization to yield global language capabilities.
+
 Formally, in the average reward framework, we consider a policy π operating in a stationary environment. At each step:
 
 The agent observes a state s from a stationary distribution μ(s)
