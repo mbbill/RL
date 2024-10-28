@@ -91,7 +91,9 @@ $$
    - $a$ represents next token $x_t$
    - $\mu(s)$ is $P_\mathcal{D}(x_{<t})$, the probability of seeing context $x_{<t}$ in the training data
    - $\pi(a|s,\theta)$ is $P(x_t|x_{<t},\theta)$, the model's prediction
-   - $p(s',r|s,a)$ becomes deterministic: the next state $s'$ is always $[x_{<t};x_t]$
+   - $p(s',r|s,a)$ represents the transition dynamics where:
+     - The next state $s'$ includes both the extended context $[x_{<t};x_t]$
+     - The reward $r$ depends on $P_\text{human}(x_t|x_{<t})$
    - $r$ is $\log P_\text{human}(x_t|x_{<t})$, the log probability under the optimal (human) policy
 
 3) Substituting these in:
