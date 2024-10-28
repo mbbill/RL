@@ -111,14 +111,8 @@ $$
 **Lemma 1**: Under the stationarity assumption, for any context $x_{\lt t}$ and token $x_t$:
 
 $$
-\sum_{x_{t+1}, r} p(x_{t+1}, r|x_{\lt t}, x_t) r = \log P_human(x_t|x_{\lt t})
+\sum_{x_{t+1}, r} p(x_{t+1}, r|x_{\lt t}, x_t) r = \log P_{human}(x_t|x_{\lt t})
 $$
-
-*Proof of Lemma 1*:
-- By stationarity, the next context distribution depends only on the current context
-- The reward is defined as the log probability under the human policy
-- The transition probability marginalizes out to 1
-- Therefore, the sum reduces to the immediate reward
 
 5) Applying Lemma 1:
 
@@ -139,6 +133,22 @@ $$
 $$
 
 This final form is exactly the gradient of the LLM training objective.
+
+**Proof of Lemma 1**:
+1. When sampling from our fixed dataset $\mathcal{D}$, we have a stationary distribution over states (contexts) $\mu(x_{\lt t})$
+
+2. For each context-token pair $(x_{\lt t}, x_t)$ in our dataset:
+   * The reward $r$ is defined as $$r = \log P_{human}(x_t|x_{\lt t})$$
+   * The next context $x_{t+1}$ is deterministically obtained by appending $x_t$ to $x_{\lt t}$
+   * Therefore $$p(x_{t+1}, r|x_{\lt t}, x_t) = p(x_{t+1}|x_{\lt t}, x_t) \cdot \mathbb{1}[r = \log P_{human}(x_t|x_{\lt t})]$$
+
+3. Since $$\sum_{x_{t+1}} p(x_{t+1}|x_{\lt t}, x_t) = 1$$ (transition probabilities sum to 1)
+
+4. The summation reduces to:
+
+   $$\sum_{x_{t+1}, r} p(x_{t+1}, r|x_{\lt t}, x_t) r = \log P_{human}(x_t|x_{\lt t}) \sum_{x_{t+1}} p(x_{t+1}|x_{\lt t}, x_t) = \log P_{human}(x_t|x_{\lt t})$$
+
+This shows that under our sampling process from the fixed dataset, the expected reward for a state-action pair is exactly the log probability under the human policy.
 
 ### 3.3 Implications
 
