@@ -49,6 +49,12 @@ $$
 \mathcal{L}(\theta) = \mathbb{E}\_{x \sim \mathcal{D}} [\log P(x_t|x_{\lt t}, \theta)]
 $$
 
+The gradient of $\mathcal{L}(\theta)$ with respect to $\theta$ is:
+
+$$
+\nabla_{\theta} \mathcal{L}(\theta) = \mathbb{E}\_{x \sim \mathcal{D}} [\nabla_{\theta} \log P(x_t|x_{\lt t}, \theta)]
+$$
+
 where $\mathcal{D}$ represents the distribution of human-generated text.
 
 ## 3. The Equivalence Theorem
@@ -57,8 +63,20 @@ where $\mathcal{D}$ represents the distribution of human-generated text.
 
 Two critical conditions enable the equivalence:
 
-1. **Stationarity**: The training data distribution $\mathcal{D}$ represents a stationary distribution over contexts (states)
-2. **Optimal Policy Samples**: The training data consists of samples from an optimal policy (human-generated text)
+1. **Stationarity**:
+    - When sampling from the fixed training dataset $\mathcal{D}$, we obtain a stationary distribution over states (contexts)
+    - The induced state distribution $\mu(s)$ remains constant because:
+      - Our dataset $\mathcal{D}$ is fixed
+      - We sample randomly and uniformly from $D$
+      - Each training example is sampled independently
+    - This matches the RL setting where following a fixed policy $\pi$ induces a stationary state distribution $\mu_\pi(s)$
+2. **Optimal Policy Samples**:
+    - Human-generated text represents samples from a near-optimal policy
+    - This assumption is supported by humans' demonstrated mastery of language. We acknowledge this is an idealization and discuss its limitations in later sections.
+3. **Markov Property in Context Windows**:
+    - Given a context window of size $k$, future tokens depend only on this context
+      - $P(x_t|x_{\lt t}) = P(x_t|x_{t-k:t-1})$
+    - This is a practical limitation of current LLM architectures
 
 ### 3.2 Formal Equivalence
 
@@ -66,44 +84,49 @@ Two critical conditions enable the equivalence:
 
 *Proof*:
 
-Let's establish the mapping:
-- States ($s$) correspond to token contexts ($x_{<t}$)
-- Actions ($a$) correspond to next tokens ($x_t$)
-- The stationary distribution $\mu(s)$ corresponds to the distribution of contexts in $\mathcal{D}$
-- The policy $\pi(a|s,\theta)$ corresponds to the LLM's token prediction $P(x_t|x_{<t},\theta)$
-- The immediate reward $r$ corresponds to the log probability under the optimal (human) policy
-
-The average reward gradient is:
-
-$$
-\nabla_\theta r(\pi) = \nabla_\theta \sum_s \mu(s) \sum_a \pi(a | s, \theta) \sum_{s', r} p(s', r | s, a) r
-$$
-
-Under our mapping, let's derive this step by step:
-
 1) First, let's consider the average reward gradient:
 
 $$
 \nabla_\theta r(\pi) = \nabla_\theta \sum_s \mu(s) \sum_a \pi(a | s, \theta) \sum_{s', r} p(s', r | s, a) r
 $$
 
-2) In the language modeling context:
-   - $s$ represents context $x_{<t}$
-   - $a$ represents next token $x_t$
-   - $\mu(s)$ is $P_\mathcal{D}(x_{<t})$, the probability of seeing context $x_{<t}$ in the training data
-   - $\pi(a|s,\theta)$ is $P(x_t|x_{<t},\theta)$, the model's prediction
+2)  Establish the mapping between RL and LLM components:
+   - States $s$ represents context $x_{<t}$
+   - Actions $a$ represents next token $x_t$
+   - State distribution $\mu(s)$ is $P_\mathcal{D}(x_{<t})$, the probability of seeing context $x_{<t}$ in the training data
+   - Policy $\pi(a|s,\theta)$ is $P(x_t|x_{<t},\theta)$, the model's token prediction
    - $p(s',r|s,a)$ represents the transition dynamics where:
      - The next state $s'$ includes both the extended context $[x_{<t};x_t]$
      - The reward $r$ depends on $P_\text{human}(x_t|x_{<t})$
-   - $r$ is $\log P_\text{human}(x_t|x_{<t})$, the log probability under the optimal (human) policy
+   - Reward $r$ is $\log P_\text{human}(x_t|x_{<t})$, the log probability under the optimal (human) policy
 
 3) Substituting these in:
+
+$$
+\nabla_{\theta} r(\pi) = \nabla_{\theta} \sum_{x_{\lt t}} P\_\mathcal{D}(x_{\lt t}) \sum_{x_t} P(x_t|x_{\lt t},θ) \sum_{x_{t+1}, r} p(x_{t+1}, r|x_{\lt t}, x_t) r
+$$
+
+4) By the stationarity assumption, we can simplify the transition dynamics:
+
+**Lemma 1**: Under the stationarity assumption, for any context $x_{\lt t}$ and token $x_t$:
+
+$$
+\sum_{x_{t+1}, r} p(x_{t+1}, r|x_{\lt t}, x_t) r = \log P_human(x_t|x_{\lt t})
+$$
+
+*Proof of Lemma 1*:
+- By stationarity, the next context distribution depends only on the current context
+- The reward is defined as the log probability under the human policy
+- The transition probability marginalizes out to 1
+- Therefore, the sum reduces to the immediate reward
+
+5) Applying Lemma 1:
 
 $$
 \nabla_{\theta} r(\pi) = \nabla_{\theta} \sum_{x_{\lt t}} P\_\mathcal{D}(x_{\lt t}) \sum_{x_t} P(x_t|x_{\lt t},\theta) \log P\_\text{human}(x_t|x_{\lt t})
 $$
 
-4) Since we're training on human-generated data, $P_\text{human}(x_t|x_{<t})$ is the empirical distribution in our training data. Therefore:
+4) By the definition of expectation:
 
 $$
 \nabla_{\theta} r(\pi) = \nabla_{\theta} \mathbb{E}\_{x_{\lt t} \sim \mathcal{D}} \mathbb{E}\_{x_t \sim P\_\text{human}(\cdot|x_{\lt t})} [\log P(x_t|x_{\lt t},\theta)]
@@ -115,9 +138,7 @@ $$
 \nabla_{\theta} r(\pi) = \mathbb{E}\_{x \sim \mathcal{D}} [\nabla_{\theta} \log P(x_t|x_{\lt t}, \theta)]
 $$
 
-This final form is exactly the gradient of the LLM training objective. The key insight is that by training on human-generated text (optimal policy) and maintaining stationarity through the training data distribution, we are effectively optimizing the average reward criterion.
-
-Which is exactly the gradient of the LLM training objective.
+This final form is exactly the gradient of the LLM training objective.
 
 ### 3.3 Implications
 
