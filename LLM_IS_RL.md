@@ -146,7 +146,7 @@ This final form is exactly the gradient of the LLM training objective.
 2. For each context-token pair $(x_{\lt t}, x_t)$ in our dataset:
    * The reward $r$ is defined as $$r = \log P_{human}(x_t|x_{\lt t})$$
    * The next context $x_{t+1}$ is deterministically obtained by appending $x_t$ to $x_{\lt t}$
-   * Therefore $$p(x_{t+1}, r|x_{\lt t}, x_t) = p(x_{t+1}|x_{\lt t}, x_t) \cdot \mathbb{1}[r = \log P_{human}(x_t|x_{\lt t})]$$
+   * Therefore $p(x_{t+1}, r|x_{<t}, x_t) = p(x_{t+1}|x_{<t}, x_t)$ when $r = \log P_{human}(x_t|x_{<t})$ and 0 otherwise
 
 3. Since $$\sum_{x_{t+1}} p(x_{t+1}|x_{\lt t}, x_t) = 1$$ (transition probabilities sum to 1)
 
