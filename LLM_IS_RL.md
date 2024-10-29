@@ -129,7 +129,7 @@ $$
 4) By the definition of expectation:
 
 $$
-\nabla_{\theta} r(\pi) = \nabla_{\theta} \mathbb{E}\_{x_{\lt t} \sim \mathcal{D}} \mathbb{E}\_{x_t \sim P\_\text{human}(\cdot|x_{\lt t})} [\log P(x_t|x_{\lt t},\theta)]
+\nabla_{\theta} r(\pi) = \nabla_{\theta} \mathbb{E}\_{x_{\lt t} \sim \mathcal{D}} \mathbb{E}\_{x_t \sim P(\cdot|x_{\lt t},\theta)} [\log P\_\text{human}(x_t|x_{\lt t})]
 $$
 
 5) Using the fact that we sample $(x_{<t}, x_t)$ pairs directly from the training data $\mathcal{D}$, this simplifies to:
