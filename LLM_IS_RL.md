@@ -1,16 +1,22 @@
 # Token to Intelligence: Understanding LLM Capabilities Through Average Reward
 
 ## Abstract
-Large Language Models (LLMs) have demonstrated remarkable human-level capabilities despite being trained on seemingly myopic next-token prediction. This apparent paradox - how local token prediction leads to global coherence and sophisticated behaviors - has lacked rigorous theoretical justification. In this paper, we resolve this puzzle by proving that LLM training is mathematically equivalent to average reward optimization in reinforcement learning when learning from human-generated text. This equivalence explains why models trained purely on next-token prediction naturally converge to human-level capabilities: they are implicitly optimizing long-term performance under a stationary distribution of optimal (human) behavior. Our framework provides theoretical foundations for why LLMs work, with implications for model training, data curation, and architectural design. This result bridges the gap between the simplicity of token-level training and the emergence of sophisticated language capabilities.
+Large Language Models (LLMs) present an intriguing paradox: while they are trained solely to predict the next token in a sequence, they somehow develop sophisticated capabilities like reasoning, problem-solving, and maintaining long-term coherence. How does such a myopic training objective lead to such broad intelligence? This paper resolves this puzzle by proving that LLM training is mathematically equivalent to average reward optimization in reinforcement learning when learning from human-generated text. Much like how predicting each move in a grandmaster's chess game implicitly teaches overall strategic principles, we show that correctly predicting each token in human-written text implicitly optimizes for human-level language capabilities. This equivalence explains why models trained on local token prediction naturally develop global coherence and sophisticated behaviors: they are implicitly optimizing long-term performance under a stationary distribution of optimal (human) behavior. Our framework provides theoretical foundations for why LLMs work, with implications for model training, data curation, and architectural design.
 
 ## 1. Introduction
 
-Language models are typically trained to predict the next token in a sequence based on a large corpus of text data. While this is often viewed as a supervised learning problem, we propose an alternate perspective: that LLM training is mathematically equivalent to optimizing the average reward in reinforcement learning when training on human-generated text.
+Language models are trained on a seemingly simple task: predict the next token in a sequence based on previous tokens. This training objective appears remarkably limited - how can predicting the next word lead to complex capabilities like reasoning, problem-solving, and maintaining coherent conversations over long contexts? This apparent disconnect between the simplicity of the training objective and the sophistication of the resulting behavior has lacked rigorous theoretical justification.
+We propose a novel perspective that resolves this paradox: LLM training is mathematically equivalent to optimizing the average reward in reinforcement learning when training on human-generated text. Consider an analogy: imagine learning to play chess by watching grandmasters play. You could either:
 
-This perspective offers several insights:
-1. It provides a theoretical framework for understanding why LLMs converge to human-level performance
-2. It explains how local token prediction can lead to global coherence
-3. It suggests new ways to think about LLM training and optimization
+- Try to predict each individual move they make (analogous to token prediction)
+- Try to understand their overall strategy to win the game (analogous to reinforcement learning)
+
+Our key contribution is proving that, under certain conditions, these two approaches are mathematically equivalent. Just as correctly predicting each move in enough grandmaster games would implicitly teach you winning chess strategies, we show that correctly predicting each token in human-written text implicitly optimizes for human-level language capabilities.
+This perspective offers several crucial insights:
+
+- It explains how local token prediction can lead to global coherence and sophisticated behavior
+- It provides theoretical justification for why training on high-quality human text leads to human-like capabilities
+- It suggests new ways to think about model training and optimization
 
 ## 2. Background
 
