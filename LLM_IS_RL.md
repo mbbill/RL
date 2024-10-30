@@ -1,3 +1,5 @@
+There are significant flaws in this article. Archived for now.
+
 # Token to Intelligence: Understanding LLM Capabilities Through Average Reward
 
 ## Abstract
